@@ -1,24 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Suspense, lazy } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import { AuthProvider } from './AuthContext';
+
+// Lazy load pages
+const Home = lazy(() => import("./pages/Home"));
+const Shop = lazy(() => import("./pages/Shop"));
+const About = lazy(() => import("./pages/About"));
+const Services = lazy(() => import("./pages/Services"));
+const Blog = lazy(() => import("./pages/Blog"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Thankyou = lazy(() => import("./pages/Thankyou"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const Login = lazy(() => import("./Login"));
+const Registration = lazy(() => import("./Registration"));
+
+const routes = [
+  { path: "/", element: <Home /> },
+  { path: "/shop", element: <Shop /> },
+  { path: "/about", element: <About /> },
+  { path: "/services", element: <Services /> },
+  { path: "/blog", element: <Blog /> },
+  { path: "/contact", element: <Contact /> },
+  { path: "/cart", element: <Cart /> },
+  { path: "/thankyou", element: <Thankyou /> },
+  { path: "/checkout", element: <Checkout /> },
+  { path: "/login", element: <Login /> },
+  { path: "/register", element: <Registration /> },
+];
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <Router>
+        <Header />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            {routes.map((route) => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
+          </Routes>
+        </Suspense>
+        <Footer />
+      </Router>
+    </AuthProvider>
   );
 }
 
