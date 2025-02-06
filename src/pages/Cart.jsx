@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Hero from '../components/Hero';
+import { CartContext } from '../CartContext'; // Import CartContext
 
 function Cart() {
     const [cartItems, setCartItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
+    const { updateCartCount } = useContext(CartContext); // Use CartContext
 
     useEffect(() => {
         checkUserAuthentication();
@@ -40,6 +42,7 @@ function Cart() {
         try {
             const response = await axios.get(`http://localhost:8080/api/cart/${user.id}`);
             setCartItems(response.data);
+            updateCartCount(response.data.length); // Update cart count
         } catch (error) {
             console.error('Error fetching cart items:', error);
         }
@@ -77,7 +80,6 @@ function Cart() {
     if (!user) {
         return <div>Loading...</div>;
     }
-
     return (
 <div>
     <Hero title="Cart"/>

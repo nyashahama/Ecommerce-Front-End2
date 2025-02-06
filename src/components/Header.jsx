@@ -1,13 +1,15 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../AuthContext'; // Adjust the path as needed
+import { AuthContext } from '../AuthContext';
+import { CartContext } from '../CartContext'; // Import CartContext
 
 function Header() {
     const navigate = useNavigate();
-    const { isLoggedIn, username, logout } = useContext(AuthContext); // Use AuthContext
+    const { isLoggedIn, username, logout } = useContext(AuthContext);
+    const { cartCount } = useContext(CartContext); // Use CartContext
 
     const handleLogout = () => {
-        logout(); // Call the logout function from AuthContext
+        logout();
         navigate('/');
     };
 
@@ -55,7 +57,14 @@ function Header() {
                                     </Link>
                                 </li>
                             )}
-                            <li><Link className="nav-link" to="/cart"><img src="images/cart.svg" alt="Shopping cart" /></Link></li>
+                            <li>
+                                <Link className="nav-link" to="/cart">
+                                    <img src="images/cart.svg" alt="Shopping cart" />
+                                    {cartCount > 0 && (
+                                        <span className="badge bg-danger">{cartCount}</span>
+                                    )}
+                                </Link>
+                            </li>
                         </ul>
                     </div>
                 </div>

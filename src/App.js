@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { AuthProvider } from './AuthContext';
+import { CartProvider } from './CartContext';
 
 // Lazy load pages
 const Home = lazy(() => import("./pages/Home"));
@@ -34,17 +35,19 @@ const routes = [
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Header />
-        <Suspense fallback={<div>Loading...</div>}>
-          <Routes>
-            {routes.map((route) => (
-              <Route key={route.path} path={route.path} element={route.element} />
-            ))}
-          </Routes>
-        </Suspense>
-        <Footer />
-      </Router>
+      <CartProvider>
+        <Router>
+          <Header />
+          <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+              {routes.map((route) => (
+                <Route key={route.path} path={route.path} element={route.element} />
+              ))}
+            </Routes>
+          </Suspense>
+          <Footer />
+        </Router>
+      </CartProvider>
     </AuthProvider>
   );
 }
