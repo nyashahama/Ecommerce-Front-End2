@@ -146,7 +146,10 @@ function Cart() {
                 </button>
             </div>
             <div className="col-md-6">
-                <button className="btn btn-outline-black btn-sm btn-block">
+                <button className="btn btn-outline-black btn-sm btn-block" onClick={() => {
+                    navigate('/shop');
+                    window.scrollTo(0, 0); // Scroll to the top of the page
+                }}>
                     Continue Shopping
                 </button>
             </div>
