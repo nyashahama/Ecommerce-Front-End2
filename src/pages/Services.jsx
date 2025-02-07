@@ -8,6 +8,7 @@ import ServicesUs from '../components/ServicesUs';
 function Services() {
     const [products, setProducts] = useState([]);
     const [user, setUser] = useState(null);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -19,8 +20,10 @@ function Services() {
         try {
             const response = await axios.get('http://localhost:8080/api/products');
             setProducts(response.data);
+            setError(null);
         } catch (error) {
             console.error('Error fetching products:', error);
+            setError('Unable to connect to the backend service. Please check if the server is running.');
         }
     };
 
@@ -82,19 +85,32 @@ function Services() {
                     <p><Link to="#" className="btn">Explore</Link></p>
                 </div>
                 
-                {/* Product Columns */}
-                {products.slice(0, 3).map((product, index) => (
-                    <div key={product.id} className="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                        <div className="product-item">
-                            <img src={`images/product-${index + 1}.png`} className="img-fluid product-thumbnail"/>
-                            <h3 className="product-title">{product.name}</h3>
-                            <strong className="product-price">${product.price.toFixed(2)}</strong>
-                            <span className="icon-cross" onClick={() => addToCart(product)}>
-                                <img src="images/cross.svg" className="img-fluid"/>
-                            </span>
-                        </div>
+                {/* Error/Products Columns */}
+                {error ? (
+                    <div className="col-12 col-md-9">
+                        <div className="alert alert-danger text-center p-4 shadow-lg rounded">
+    <h3 className="fw-bold">
+        <i className="bi bi-exclamation-triangle-fill me-2"></i>
+        Backend Service Unavailable
+    </h3>
+    <p className="mb-0">{error}</p>
+</div>
+
                     </div>
-                ))}
+                ) : (
+                    products.slice(0, 3).map((product, index) => (
+                        <div key={product.id} className="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+                            <div className="product-item">
+                                <img src={`images/product-${index + 1}.png`} className="img-fluid product-thumbnail"/>
+                                <h3 className="product-title">{product.name}</h3>
+                                <strong className="product-price">${product.price.toFixed(2)}</strong>
+                                <span className="icon-cross" onClick={() => addToCart(product)}>
+                                    <img src="images/cross.svg" className="img-fluid"/>
+                                </span>
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     </div>
