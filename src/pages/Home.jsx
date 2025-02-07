@@ -102,14 +102,17 @@ function Home() {
                     {products.slice(0, 3).map((product, index) =>
                      (
                         <div key={product.id} className="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                            <a className="product-item" href="#">
+                            <Link className="product-item" to={`/product/${product.id}`}>
                                 <img src={`images/product-${index + 1}.png`} className="img-fluid product-thumbnail"/>
                                 <h3 className="product-title">{product.name}</h3>
                                 <strong className="product-price">${product.price.toFixed(2)}</strong>
-                                <span className="icon-cross" onClick={() => addToCart(product)}>
+                                <span className="icon-cross" onClick={(e) => {
+                                    e.preventDefault();
+                                    addToCart(product);
+                                }}>
                                     <img src="images/cross.svg" className="img-fluid"/>
                                 </span>
-                            </a>
+                            </Link>
                         </div>
                     ))}
         {/* End Product Columns */}

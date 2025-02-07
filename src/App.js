@@ -2,8 +2,9 @@ import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import { AuthProvider } from './AuthContext';
-import { CartProvider } from './CartContext';
+import { AuthProvider } from "./AuthContext";
+import { CartProvider } from "./CartContext";
+import ProductDetail from "./pages/ProductDetail";
 
 // Lazy load pages
 const Home = lazy(() => import("./pages/Home"));
@@ -30,6 +31,7 @@ const routes = [
   { path: "/checkout", element: <Checkout /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Registration /> },
+  { path: "/product/:id", element: <ProductDetail /> },
 ];
 
 function App() {
@@ -41,7 +43,11 @@ function App() {
           <Suspense fallback={<div>Loading...</div>}>
             <Routes>
               {routes.map((route) => (
-                <Route key={route.path} path={route.path} element={route.element} />
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={route.element}
+                />
               ))}
             </Routes>
           </Suspense>
