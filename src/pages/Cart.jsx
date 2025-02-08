@@ -121,7 +121,7 @@ function Cart() {
                         <td className="product-name">
                           <h2 className="h5 text-black">{item.product.name}</h2>
                         </td>
-                        <td>${item.product.price.toFixed(2)}</td>
+                        <td>R{item.product.price.toFixed(2)}</td>
                         <td>
                           <div
                             className="input-group mb-3 d-flex align-items-center quantity-container"
@@ -158,7 +158,7 @@ function Cart() {
                           </div>
                         </td>
                         <td>
-                          ${(item.product.price * item.quantity).toFixed(2)}
+                          R{(item.product.price * item.quantity).toFixed(2)}
                         </td>
                         <td>
                           <a

@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "bootstrap/dist/js/bootstrap.bundle.min";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { AuthProvider } from "./AuthContext";

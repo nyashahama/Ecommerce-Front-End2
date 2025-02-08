@@ -6,7 +6,7 @@ import { CartContext } from "../CartContext";
 function Header() {
   const navigate = useNavigate();
   const location = useLocation(); // Get current location
-  const { isLoggedIn, username, logout } = useContext(AuthContext);
+  const { isLoggedIn, user, logout } = useContext(AuthContext);
   const { cartCount } = useContext(CartContext);
 
   // Helper function to check if path matches current route
@@ -61,17 +61,28 @@ function Header() {
             <ul className="navbar-nav ms-auto align-items-center gap-3">
               {isLoggedIn ? (
                 <li className="nav-item dropdown">
-                  <a
-                    className="nav-link dropdown-toggle d-flex align-items-center py-0"
-                    href="#"
-                    role="button"
+                  <button
+                    className="nav-link dropdown-toggle d-flex align-items-center py-0 bg-transparent border-0"
+                    type="button"
                     data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    id="userDropdown"
                   >
                     <span className="badge bg-primary me-2 fs-6">
-                      Hi, {username}
+                      Hi, {user?.firstName}
                     </span>
-                  </a>
-                  <ul className="dropdown-menu dropdown-menu-end">
+                  </button>
+                  <ul
+                    className="dropdown-menu dropdown-menu-end"
+                    aria-labelledby="userDropdown"
+                  >
+                    {user?.role === "ADMIN" && (
+                      <li>
+                        <Link className="dropdown-item" to="/admin">
+                          Admin Dashboard
+                        </Link>
+                      </li>
+                    )}
                     <li>
                       <button
                         className="dropdown-item text-danger fw-medium"

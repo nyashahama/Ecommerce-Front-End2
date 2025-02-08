@@ -124,7 +124,7 @@ function Services() {
                       />
                       <h3 className="product-title">{product.name}</h3>
                       <strong className="product-price">
-                        ${product.price.toFixed(2)}
+                        R{product.price.toFixed(2)}
                       </strong>
                       <span
                         className="icon-cross"
