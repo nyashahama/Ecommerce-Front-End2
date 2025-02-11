@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AuthContext } from "./AuthContext"; // Adjust the path as needed
+import { useAuth } from "./AuthContext";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -11,7 +11,7 @@ function Login() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext); // Use the login function from AuthContext
+  const { login } = useAuth(); // Use the login function from AuthContext
 
   const handleLogin = async (e) => {
     e.preventDefault();

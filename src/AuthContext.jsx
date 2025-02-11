@@ -1,19 +1,36 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-export const AuthContext = createContext();
+// 1. Create the context
+const AuthContext = createContext();
 
+// 2. Create the provider
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
   useEffect(() => {
-    // Check stored user data
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-      setIsLoggedIn(true);
-    }
+    const verifySession = async () => {
+      const token = localStorage.getItem("token");
+      const storedUser = localStorage.getItem("user");
+
+      if (token && storedUser) {
+        try {
+          const response = await axios.get("/api/auth/verify", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setUser(response.data.user);
+        } catch (error) {
+          localStorage.clear();
+          setUser(null);
+        }
+      }
+    };
+    verifySession();
   }, []);
 
   const login = (userData) => {
@@ -45,4 +62,13 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+// 3. Create and export the custom hook
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };

@@ -3,17 +3,16 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Hero from "../components/Hero";
 import { CartContext } from "../CartContext"; // Import CartContext
+import { useAuth } from "../AuthContext";
+import { useCart } from "../CartContext";
 
 function Cart() {
+  const { user } = useAuth();
+  const { cart, loading, error } = useCart();
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const { updateCartCount } = useContext(CartContext); // Use CartContext
-
-  useEffect(() => {
-    checkUserAuthentication();
-  }, []);
 
   useEffect(() => {
     if (user) {
@@ -21,24 +20,6 @@ function Cart() {
       fetchCartTotal();
     }
   }, [user]);
-
-  const checkUserAuthentication = async () => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/users/${userId}`
-        );
-        setUser(response.data);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        localStorage.removeItem("userId");
-        navigate("/login");
-      }
-    } else {
-      navigate("/login");
-    }
-  };
 
   const fetchCartItems = async () => {
     try {
@@ -86,8 +67,13 @@ function Cart() {
   };
 
   if (!user) {
-    return <div>Loading...</div>;
+    navigate("/login");
+    return null;
   }
+
+  if (loading) return <div className="container mt-4">Loading cart...</div>;
+  if (error) return <div className="alert alert-danger mt-4">{error}</div>;
+
   return (
     <div>
       <Hero title="Cart" />

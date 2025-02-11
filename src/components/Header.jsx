@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import { Link, useNavigate, useLocation, NavLink } from "react-router-dom"; // Add useLocation and NavLink
-import { AuthContext } from "../AuthContext";
+import { useAuth } from "../AuthContext";
 import { CartContext } from "../CartContext";
 
 function Header() {
   const navigate = useNavigate();
   const location = useLocation(); // Get current location
-  const { isLoggedIn, user, logout } = useContext(AuthContext);
+  const { user, logout } = useAuth();
   const { cartCount } = useContext(CartContext);
 
   // Helper function to check if path matches current route
@@ -59,7 +59,7 @@ function Header() {
             </ul>
 
             <ul className="navbar-nav ms-auto align-items-center gap-3">
-              {isLoggedIn ? (
+              {user ? (
                 <li className="nav-item dropdown">
                   <button
                     className="nav-link dropdown-toggle d-flex align-items-center py-0 bg-transparent border-0"

@@ -1,70 +1,36 @@
-import React, { useEffect, useState, useContext } from "react";
-import Hero from "../components/Hero";
-import axios from "axios";
-import Testimonals from "../components/Testimonals";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+import Hero from "../components/Hero";
+import Testimonals from "../components/Testimonals";
 import RecentBlog from "../components/RecentBlog";
 import ChooseUs from "../components/ChooseUs";
 import PopularProducts from "../components/PopularProducts";
 import HelpSection from "../components/HelpSection";
-import { AuthContext } from "../AuthContext";
-import { toast } from "react-toastify";
-import ProductManagement from "../components/ProductManagement";
-import OrderManagement from "../components/OrderManagement";
-import UserManagement from "../components/UserManagement";
+import { useAuth } from "../AuthContext";
 
-function Home() {
+const Home = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
-  const [showManagerPanel, setShowManagerPanel] = useState(false);
-  const [activeManagerTab, setActiveManagerTab] = useState("products");
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchProducts();
-    checkAdminStatus();
-  }, [user]);
+  }, []);
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/products");
-      setProducts(response.data);
+      const { data } = await axios.get("http://localhost:8080/api/products");
+      setProducts(data);
       setError(null);
-    } catch (error) {
-      console.error("Error fetching products:", error);
+    } catch (err) {
+      console.error("Error fetching products:", err);
       setError(
         "Unable to connect to the backend service. Please check if the server is running."
       );
-    }
-  };
-
-  const checkAdminStatus = () => {
-    setShowManagerPanel(user?.role === "ADMIN");
-  };
-
-  const handleProductUpdate = async (productId, updatedData) => {
-    try {
-      await axios.put(
-        `http://localhost:8080/api/products/${productId}`,
-        updatedData
-      );
-      fetchProducts();
-      toast.success("Product updated successfully!");
-    } catch (error) {
-      toast.error("Failed to update product");
-    }
-  };
-
-  const handleProductDelete = async (productId) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        await axios.delete(`http://localhost:8080/api/products/${productId}`);
-        fetchProducts();
-        toast.success("Product deleted successfully!");
-      } catch (error) {
-        toast.error("Failed to delete product");
-      }
     }
   };
 
@@ -80,16 +46,18 @@ function Home() {
       return;
     }
 
+    const cartItem = {
+      user: { id: user.id },
+      product: { id: product.id },
+      quantity: 1,
+    };
+
     try {
-      const cartItem = {
-        user: { id: user.id },
-        product: { id: product.id },
-        quantity: 1,
-      };
       await axios.post("http://localhost:8080/api/cart", cartItem);
       navigate("/cart");
-    } catch (error) {
-      console.error("Error adding product to cart:", error);
+    } catch (err) {
+      console.error("Error adding product to cart:", err);
+      toast.error("Error adding product to cart");
     }
   };
 
@@ -97,20 +65,20 @@ function Home() {
     <div>
       <Hero title="Modern Interior Design Studio" />
 
-      {/* Start Product Section */}
-      <div className="product-section">
+      {/* Product Section */}
+      <section className="product-section">
         <div className="container">
           {error ? (
             <div className="alert alert-danger text-center p-4 shadow-lg rounded">
               <h3 className="fw-bold">
-                <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                <i className="bi bi-exclamation-triangle-fill me-2" />
                 Backend Service Unavailable
               </h3>
               <p className="mb-0">{error}</p>
             </div>
           ) : (
             <div className="row">
-              {/* Start Column 1 */}
+              {/* Introductory Column */}
               <div className="col-md-12 col-lg-3 mb-5 mb-lg-0">
                 <h2 className="mb-4 section-title">
                   Crafted with excellent material.
@@ -118,17 +86,14 @@ function Home() {
                 <p className="mb-4">
                   Donec vitae odio quis nisl dapibus malesuada. Nullam ac
                   aliquet velit. Aliquam vulputate velit imperdiet dolor tempor
-                  tristique.{" "}
+                  tristique.
                 </p>
-                <p>
-                  <Link to="/shop" className="btn">
-                    Explore
-                  </Link>
-                </p>
+                <Link to="/shop" className="btn">
+                  Explore
+                </Link>
               </div>
-              {/* End Column 1 */}
 
-              {/* Start Product Columns */}
+              {/* Product Columns */}
               {products.slice(0, 3).map((product, index) => (
                 <div
                   key={product.id}
@@ -137,6 +102,7 @@ function Home() {
                   <Link className="product-item" to={`/product/${product.id}`}>
                     <img
                       src={`images/product-${index + 1}.png`}
+                      alt={product.name}
                       className="img-fluid product-thumbnail"
                     />
                     <h3 className="product-title">{product.name}</h3>
@@ -150,73 +116,27 @@ function Home() {
                         addToCart(product);
                       }}
                     >
-                      <img src="images/cross.svg" className="img-fluid" />
+                      <img
+                        src="images/cross.svg"
+                        alt="Add to Cart"
+                        className="img-fluid"
+                      />
                     </span>
                   </Link>
                 </div>
               ))}
-              {/* End Product Columns */}
             </div>
           )}
         </div>
-      </div>
-      {/* End Product Section */}
-
-      {showManagerPanel && (
-        <div className="manager-panel mt-5">
-          <div className="container">
-            <h2 className="mb-4">Management Dashboard</h2>
-            <div className="nav nav-tabs mb-4">
-              <button
-                className={`nav-link ${
-                  activeManagerTab === "products" ? "active" : ""
-                }`}
-                onClick={() => setActiveManagerTab("products")}
-              >
-                Products
-              </button>
-              <button
-                className={`nav-link ${
-                  activeManagerTab === "orders" ? "active" : ""
-                }`}
-                onClick={() => setActiveManagerTab("orders")}
-              >
-                Orders
-              </button>
-              <button
-                className={`nav-link ${
-                  activeManagerTab === "users" ? "active" : ""
-                }`}
-                onClick={() => setActiveManagerTab("users")}
-              >
-                Users
-              </button>
-            </div>
-
-            {activeManagerTab === "products" && (
-              <ProductManagement
-                products={products}
-                onUpdate={handleProductUpdate}
-                onDelete={handleProductDelete}
-              />
-            )}
-            {activeManagerTab === "orders" && <OrderManagement />}
-            {activeManagerTab === "users" && <UserManagement />}
-          </div>
-        </div>
-      )}
+      </section>
 
       <ChooseUs />
-
       <HelpSection />
-
       <PopularProducts />
-
       <Testimonals />
-
       <RecentBlog />
     </div>
   );
-}
+};
 
 export default Home;
